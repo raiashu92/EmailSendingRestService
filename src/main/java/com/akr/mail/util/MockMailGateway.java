@@ -2,11 +2,10 @@ package com.akr.mail.util;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MockMailGateway implements EmailGateway {
-    AtomicInteger count = new AtomicInteger(1);
+public class MockMailGateway {
+    static AtomicInteger count = new AtomicInteger(1);
 
-    @Override
-    public boolean sendEmail(String toAddress, String subject, String mailText) {
+    public static boolean sendEmail(String toAddress, String subject, String mailText) {
         //skipping every 3rd call to simulate mail sending failure
         if(count.get() == 3) {
             count.set(1);

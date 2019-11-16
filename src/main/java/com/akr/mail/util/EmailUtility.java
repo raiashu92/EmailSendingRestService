@@ -2,25 +2,22 @@ package com.akr.mail.util;
 
 import com.akr.mail.datastore.Order;
 import com.akr.mail.model.SimpleMailObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 //@Todo make async ??
 @Component
 public class EmailUtility {
-
-    //use real for using gmail's gateway, otherwise it will default to printing on console
-    private static final String WHICH_GATEWAY_TO_USE = "mock";
+    private static final Logger log = Logger.getLogger("EmailUtility.class");
     private ConcurrentHashMap<Integer, String> emailState;
-    private EmailGateway emailGateway;
+    @Autowired
+    EmailGateway emailGateway;
 
     public EmailUtility() {
         this.emailState = new ConcurrentHashMap<>();
-        if (WHICH_GATEWAY_TO_USE.equals("real"))
-            this.emailGateway = new RealMailGateway();
-        else
-            this.emailGateway = new MockMailGateway();
     }
 
     public boolean sendSimpleEmail(SimpleMailObject simpleMailObject) {
