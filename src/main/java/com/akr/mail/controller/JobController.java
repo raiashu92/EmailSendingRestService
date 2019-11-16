@@ -27,8 +27,10 @@ public class JobController {
 
     //order received
     @RequestMapping(value = "/order/new", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity<Integer> createNewOrder(@RequestBody NewOrderObject newOrderObject) {
-        return new ResponseEntity<>(orderService.add(newOrderObject), HttpStatus.CREATED);
+    public ResponseEntity<String> createNewOrder(@RequestBody NewOrderObject newOrderObject) {
+        int id = orderService.add(newOrderObject);
+        return new ResponseEntity<>("New order created with id: " + id
+                + ". An email with update will be sent.", HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/order/all")
