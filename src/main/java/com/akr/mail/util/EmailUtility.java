@@ -17,7 +17,7 @@ public class EmailUtility {
 
     public EmailUtility() {
         this.emailState = new ConcurrentHashMap<>();
-        if(WHICH_GATEWAY_TO_USE.equals("real"))
+        if (WHICH_GATEWAY_TO_USE.equals("real"))
             this.emailGateway = new RealMailGateway();
         else
             this.emailGateway = new MockMailGateway();
@@ -38,11 +38,8 @@ public class EmailUtility {
         mailBody.append("\nThanking you \nMart.com");
 
         if (emailGateway.sendEmail(order.getEmail(), subject, mailBody.toString())) {
-            System.out.println("id: " + id + " emailstate size: " + emailState.size());
             emailState.put(id, "Sent");
-        }
-        else {
-            System.out.println("id: " + id + " emailstate size: " + emailState.size());
+        } else {
             emailState.put(id, "Failed");
         }
     }
@@ -52,7 +49,6 @@ public class EmailUtility {
     }
 
     public void setEmailStateForOrderId(int id, String state) {
-        System.out.println("id: " + id + " emailstate size: " + emailState.size());
         emailState.put(id, state);
     }
 }

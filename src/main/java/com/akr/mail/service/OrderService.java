@@ -18,9 +18,13 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 public class OrderService {
+    private static final Logger log = Logger.getLogger("OrderService.class");
+
     @Autowired
     OrderRepository orderRepository;
 
@@ -49,6 +53,7 @@ public class OrderService {
     public String delete(int id) {
         try {
             orderRepository.deleteById(id);
+            log.info("deleting order with id: " + id);
             return "Order with " + id + " has been deleted!";
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -88,6 +93,7 @@ public class OrderService {
             order.setCancelTime(LocalTime.now().format(DateTimeFormatter.ofPattern("h:mm:ss a")));
             order.setCancelReason(statusUpdate.getReason());
         } else {
+            log.log(Level.WARNING, "Incorrect order status given in request: valid status - shipped, cancelled.");
             return "BAD_REQUEST";
         }
 
@@ -100,6 +106,7 @@ public class OrderService {
 
     @Transactional
     public void updateOrder(Order order) {
+        log.info("Persisting state for id: " + order.getOrderId());
         entityManager.persist(order);
     }
 }
