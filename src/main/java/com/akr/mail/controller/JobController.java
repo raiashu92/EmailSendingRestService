@@ -64,11 +64,11 @@ public class JobController {
 
     //send normal format email
     @RequestMapping(value = "/mail", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity<String> sendNormalEmail(@RequestParam SimpleMailObject simpleMailObject) {
+    public ResponseEntity<String> sendNormalEmail(@RequestBody SimpleMailObject simpleMailObject) {
         if (emailUtility.sendSimpleEmail(simpleMailObject))
             return new ResponseEntity<>("Mail sent successfully to " + simpleMailObject.getToAddress(), HttpStatus.OK);
         else
-            return new ResponseEntity<>("Error occurred while sending mail, please verify input parameters.", HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity<>("Error occurred while sending mail, please retry with same link.", HttpStatus.NOT_ACCEPTABLE);
     }
 
     //check status of email for a given order id
@@ -90,7 +90,7 @@ public class JobController {
         if (Objects.isNull(emailState))
             return new ResponseEntity<>("No such order with id " + id, HttpStatus.NOT_FOUND);
         else if ("Sent".equalsIgnoreCase(emailState))
-            return new ResponseEntity<>("Email sent already", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Email sent already", HttpStatus.OK);
         else {
             Optional<Order> order = orderService.findOrderById(id);
             if (order.isPresent()) {
