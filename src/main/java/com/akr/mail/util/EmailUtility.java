@@ -3,18 +3,24 @@ package com.akr.mail.util;
 import com.akr.mail.datastore.Order;
 import com.akr.mail.model.SimpleMailObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-//@Todo make async ??
 @Component
 public class EmailUtility {
     private static final Logger log = Logger.getLogger("EmailUtility.class");
     private ConcurrentHashMap<Integer, String> emailState;
+
     @Autowired
     EmailGateway emailGateway;
+    @Autowired
+    TaskExecutor taskExecutor;
+    @Autowired
+    ApplicationContext applicationContext;
 
     public EmailUtility() {
         this.emailState = new ConcurrentHashMap<>();
@@ -25,20 +31,10 @@ public class EmailUtility {
     }
 
     public void sendTemplateEmail(int id, Order order) {
-        String subject = "Update for your order id: " + id;
-        StringBuffer mailBody = new StringBuffer("Dear " + order.getCustomerName() + "\n");
-        if ("cancelled".equalsIgnoreCase(order.getOrderStatus()))
-            mailBody.append("\n  Your order has been " + order.getOrderStatus() + ", reason: " + order.getCancelReason() + "\n");
-        else
-            mailBody.append("\n  Your order has been " + order.getOrderStatus() + "\n");
-        mailBody.append("  Please contact customer support for any issues" + "\n");
-        mailBody.append("\nThanking you \nMart.com");
-
-        if (emailGateway.sendEmail(order.getEmail(), subject, mailBody.toString())) {
-            emailState.put(id, "Sent");
-        } else {
-            emailState.put(id, "Failed");
-        }
+        log.info("Delegating send mail task to executor");
+        RequestExecutor request = applicationContext.getBean(RequestExecutor.class);
+        request.setParameters(id, order);
+        taskExecutor.execute(request);
     }
 
     public String getEmailStateForOrderId(int id) {

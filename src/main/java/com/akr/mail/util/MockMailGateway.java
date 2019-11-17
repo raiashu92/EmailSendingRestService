@@ -9,6 +9,9 @@ public class MockMailGateway {
         //skipping every 3rd call to simulate mail sending failure
         if(count.get() == 3) {
             count.set(1);
+            System.out.println("\n **************");
+            System.out.println("failing this mock email with subject: " + subject);
+            System.out.println("\n **************");
             return false;
         }
         else {
